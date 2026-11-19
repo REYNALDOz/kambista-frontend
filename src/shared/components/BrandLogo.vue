@@ -1,14 +1,14 @@
 <script setup lang="ts">
-// The logo file has dark text, so it only reads well on light backgrounds.
-// On dark ones (`tone="light"`) it is turned white. The caller sets the height (`class="h-12"`).
+// `tone` is the color of the logo: "dark" (dark text) goes on light backgrounds and
+// "light" (white text) on dark ones, like the login panel. The caller sets the height (`class="h-12"`).
 defineProps<{ tone: 'light' | 'dark' }>();
+
+const LOGOS = {
+  dark: '/logo.png',
+  light: '/logo2-light.png',
+} as const;
 </script>
 
 <template>
-  <img
-    src="/logo.png"
-    alt="Kambista"
-    class="w-auto"
-    :class="{ 'brightness-0 invert': tone === 'light' }"
-  />
+  <img :src="LOGOS[tone]" alt="Kambista" class="w-auto" />
 </template>
