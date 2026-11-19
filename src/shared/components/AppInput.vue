@@ -7,6 +7,9 @@ const props = defineProps<{
   error?: string | null;
   hint?: string;
   autocomplete?: string;
+  placeholder?: string;
+  /** Which keyboard a phone shows (`decimal` for amounts). */
+  inputmode?: 'text' | 'decimal';
 }>();
 
 const model = defineModel<string>({ required: true });
@@ -30,6 +33,8 @@ const inputType = computed(() =>
         v-model="model"
         :type="inputType"
         :autocomplete="autocomplete"
+        :placeholder="placeholder"
+        :inputmode="inputmode"
         :aria-invalid="!!error"
         :aria-describedby="error ? `${id}-error` : undefined"
         class="w-full rounded-lg border bg-white px-4 py-3 text-ink-900 outline-none transition focus:ring-2"
