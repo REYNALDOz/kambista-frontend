@@ -7,7 +7,8 @@ import AppInput from '../../shared/components/AppInput.vue';
 import PaginationBar from '../../shared/components/PaginationBar.vue';
 import { formatDate, formatMoney, formatRate } from '../exchange/money';
 import type { TransactionResponse } from '../exchange/types';
-import { getHistory } from './api';
+import { useSession } from '../auth/session.store';
+import { getHistory, type HistoryFilters } from './api';
 import { defaultRange, toInstants, validateRange } from './range';
 
 const PAGE_SIZE = 10;
@@ -20,7 +21,16 @@ const loadError = ref<string | null>(null);
 const transactions = ref<TransactionResponse[]>([]);
 const page = ref(1);
 const total = ref(0);
-let searched = toInstants(range);
+
+// An admin can look at the history of another user. Everybody else always sees their own,
+// and the API ignores a userId that does not come from an admin.
+const session = useSession();
+const isAdmin = computed(() => session.user?.rol === 'admin');
+const userId = ref('');
+
+// What the last search asked for. Moving between pages uses this, not the inputs, which the
+// user may have edited without pressing "Buscar".
+let searched: HistoryFilters = toInstants(range);
 
 const errors = computed(() =>
   submitted.value ? validateRange(range) : { startDate: null, endDate: null },
@@ -32,7 +42,11 @@ function search() {
   submitted.value = true;
   const problems = validateRange(range);
   if (problems.startDate || problems.endDate) return;
-  searched = toInstants(range);
+  const wantedUser = userId.value.trim();
+  searched = {
+    ...toInstants(range),
+    ...(isAdmin.value && wantedUser ? { userId: wantedUser } : {}),
+  };
   void load(1);
 }
 
@@ -67,6 +81,15 @@ onMounted(search); // starts with the last 30 days
       class="grid items-start gap-4 rounded-2xl border border-mist-200 bg-white p-6 sm:grid-cols-[1fr_1fr_auto]"
       @submit.prevent="search"
     >
+      <AppInput
+        v-if="isAdmin"
+        v-model="userId"
+        class="sm:col-span-3"
+        label="ID de usuario"
+        placeholder="Pega aquí el ID del usuario"
+        hint="Déjalo vacío para ver tu propio historial."
+        autocomplete="off"
+      />
       <AppInput
         v-model="range.startDate"
         label="Desde"

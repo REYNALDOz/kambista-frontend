@@ -9,7 +9,8 @@ It talks to the **`kambista-api`** repository, which must be running. The interf
 - Register, log in and log out, with route guards: the app screens need a session.
 - Exchange form with the validations of the challenge: no empty fields, different currencies, at most 2 decimals and at most 7 integer digits (9,999,999.99).
 - Summary of each exchange: what was sent, what the user receives, the rate that was applied and the date.
-- History by date range, in a table with pagination (10 per page) and loading, empty and error states.
+- History by date range, in a table with pagination (10 per page, one page asked to the server at a time) and loading, empty and error states.
+- **Admin:** an admin sees an extra field, "ID de usuario", to look at the history of any user. Left empty, it shows their own. A regular user never sees the field, and the API ignores a `userId` that does not come from an admin.
 - Responsive layout: side menu on wide screens, top bar on small ones.
 
 ## Prerequisites
@@ -79,7 +80,8 @@ Each feature keeps its views, API calls and validation together. What several fe
 - **Days are sent as exact instants.** A day chosen in the history is converted to the moment it starts and ends in the user's time zone. Sending only a date would mean that day in UTC, and an exchange made at 8 pm in Peru would fall in the next day.
 - **The redirect after login only accepts paths inside the app**, so a link cannot send the user to another site.
 - **Messages for the user are translated in one place** (`shared/api/error-messages.ts`): the API names its domain errors and each one has a readable message.
-- **Pagination happens in the browser**, because the API returns every match of the history.
+- **Pagination is done by the server.** The screen asks for one page at a time (`page` and `limit`) and reads the total of the whole range from the `X-Total-Count` header, so it works with a very long history. Moving between pages uses the days of the **last search**, not what the date inputs say now, which the user may have edited without pressing "Buscar".
+- **The admin field only changes what is asked.** The screen does not decide who can see what: it shows the field to an admin as a convenience, and the API is the one that enforces it.
 
 ## Deploying
 
@@ -93,6 +95,4 @@ In the API, `CORS_ORIGIN` must be the URL of this app, **without a trailing slas
 ## Not implemented yet
 
 - **"Forgot my password":** it does not exist in the API, so there is no link to it.
-- **Admin view of another user's history:** the API supports it (`userId`), but the screen does not offer it. The admin role is managed in the database.
-- **Pagination in the server:** the API would send one page at a time, which matters with a very long history.
 - **Browser end-to-end tests** (for example with Playwright). The API has its own end-to-end test.

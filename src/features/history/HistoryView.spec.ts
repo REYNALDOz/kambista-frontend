@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils';
+import { createPinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '../../shared/api/http';
 import type { TransactionResponse } from '../exchange/types';
@@ -29,7 +30,7 @@ const pageOf = (
 ): HistoryPage => ({ items, total });
 
 async function open() {
-  const wrapper = mount(HistoryView);
+  const wrapper = mount(HistoryView, { global: { plugins: [createPinia()] } });
   await flushPromises();
   return wrapper;
 }
@@ -165,7 +166,9 @@ describe('HistoryView', () => {
           }),
       )
       .mockResolvedValueOnce(pageOf(many(2)));
-    const wrapper = mount(HistoryView);
+    const wrapper = mount(HistoryView, {
+      global: { plugins: [createPinia()] },
+    });
     await flushPromises();
 
     await wrapper.get('form').trigger('submit');

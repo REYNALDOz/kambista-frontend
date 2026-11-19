@@ -11,6 +11,8 @@ const root = ref<HTMLElement | null>(null);
 const initial = computed(
   () => session.user?.nombre.charAt(0).toUpperCase() ?? '?',
 );
+const isAdmin = computed(() => session.user?.rol === 'admin');
+const roleLabel = computed(() => (isAdmin.value ? 'Administrador' : 'Usuario'));
 
 function closeOnOutsideClick(event: MouseEvent) {
   if (root.value && !root.value.contains(event.target as Node))
@@ -52,10 +54,11 @@ async function logout() {
       >
         {{ initial }}
       </span>
-      <span
-        class="hidden text-sm font-semibold tracking-wide uppercase sm:block"
-      >
-        {{ session.user?.nombre }}
+      <span class="hidden text-left sm:block">
+        <span class="block text-sm font-semibold tracking-wide uppercase">
+          {{ session.user?.nombre }}
+        </span>
+        <span class="block text-xs text-ocean-700">{{ roleLabel }}</span>
       </span>
       <svg
         viewBox="0 0 24 24"
@@ -78,6 +81,14 @@ async function logout() {
       <div class="border-b border-mist-200 px-3 py-2">
         <p class="font-semibold">{{ session.user?.nombre }}</p>
         <p class="truncate text-sm text-ocean-700">{{ session.user?.email }}</p>
+        <span
+          class="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
+          :class="
+            isAdmin ? 'bg-mint-400 text-ink-950' : 'bg-mist-100 text-ocean-700'
+          "
+        >
+          {{ roleLabel }}
+        </span>
       </div>
       <button
         type="button"

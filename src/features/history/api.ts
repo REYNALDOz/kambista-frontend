@@ -2,13 +2,16 @@ import { requestWithHeaders } from '../../shared/api/http';
 import type { TransactionResponse } from '../exchange/types';
 import type { DayRange } from './range';
 
+/** The days to look at and, only for an admin, the user whose history is wanted. */
+export type HistoryFilters = DayRange & { userId?: string };
+
 export interface HistoryPage {
   items: TransactionResponse[];
   total: number;
 }
 
 export async function getHistory(
-  range: DayRange,
+  range: HistoryFilters,
   page: number,
   pageSize: number,
 ): Promise<HistoryPage> {
