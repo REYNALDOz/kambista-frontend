@@ -1,6 +1,11 @@
 import { API_URL } from '../config';
 import { messageFor, NETWORK_ERROR } from './error-messages';
 
+export interface HttpResult<T> {
+  data: T;
+  headers: Headers;
+}
+
 export class ApiError extends Error {
   readonly status: number;
 
@@ -11,10 +16,6 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * What the client needs from the session. It is set once in `main.ts`, so this file
- * does not depend on any feature.
- */
 interface HttpHandlers {
   getToken(): string | null;
   onUnauthorized(): void;
@@ -35,10 +36,10 @@ interface RequestOptions {
   query?: Record<string, string | undefined>;
 }
 
-export async function request<T>(
+export async function requestWithHeaders<T>(
   path: string,
   { method = 'GET', body, query = {} }: RequestOptions = {},
-): Promise<T> {
+): Promise<HttpResult<T>> {
   const url = new URL(path, API_URL);
   for (const [name, value] of Object.entries(query)) {
     if (value) url.searchParams.set(name, value);
@@ -73,5 +74,11 @@ export async function request<T>(
     );
   }
 
-  return (await response.json()) as T;
+  return { data: (await response.json()) as T, headers: response.headers };
+}
+export async function request<T>(
+  path: string,
+  options?: RequestOptions,
+): Promise<T> {
+  return (await requestWithHeaders<T>(path, options)).data;
 }
