@@ -16,7 +16,7 @@ const links = [
   <div class="flex min-h-screen flex-col md:flex-row">
     <!-- Side menu on wide screens, top bar on small ones -->
     <aside
-      class="flex items-center gap-4 border-b border-mist-200 bg-white px-4 py-3 md:w-64 md:shrink-0 md:flex-col md:items-stretch md:gap-8 md:border-r md:border-b-0 md:px-3 md:py-6"
+      class="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-mist-200 bg-white px-4 py-3 md:w-64 md:shrink-0 md:flex-col md:flex-nowrap md:items-stretch md:gap-8 md:border-r md:border-b-0 md:px-3 md:py-6"
     >
       <BrandLogo tone="dark" class="h-12 md:ml-3 md:self-start" />
       <nav class="flex gap-1 md:flex-col" aria-label="Principal">
