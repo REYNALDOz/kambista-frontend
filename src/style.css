@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand palette, sampled from the Kambista landing page */
+  --color-ink-950: #000820;
+  --color-ink-900: #060f25;
+  --color-ocean-950: #001e2a;
+  --color-ocean-900: #00293c;
+  --color-ocean-700: #364e57;
+  --color-mint-400: #00e3c2;
+  --color-mint-500: #00c4a7;
+  --color-mist-100: #f4f5f5;
+  --color-mist-200: #d8dcdf;
+  --color-peach-300: #fead7e;
+
+  /* Top of the dark gradient of the login panel (it fades into ink-900) */
+  --color-indigo-800: #2e3a80;
+
+  /* Feedback */
+  --color-danger-400: #ff7a7a;
+  --color-danger-600: #c62828;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-mist-100);
+    color: var(--color-ink-900);
+  }
+}

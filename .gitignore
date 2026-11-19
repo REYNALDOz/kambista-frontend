@@ -1,0 +1,23 @@
+# dependencies and build output
+node_modules
+dist
+*.tsbuildinfo
+coverage
+
+# local configuration: never commit it
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+pnpm-debug.log*
+
+# editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# local tooling
+.atl/
