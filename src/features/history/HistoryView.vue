@@ -19,40 +19,38 @@ const loaded = ref(false);
 const loadError = ref<string | null>(null);
 const transactions = ref<TransactionResponse[]>([]);
 const page = ref(1);
+const total = ref(0);
+let searched = toInstants(range);
 
-// Field errors only appear after the first attempt to search.
 const errors = computed(() =>
   submitted.value ? validateRange(range) : { startDate: null, endDate: null },
 );
 
-// The API sends every match; the table shows them one page at a time.
-const pageItems = computed(() =>
-  transactions.value.slice(
-    (page.value - 1) * PAGE_SIZE,
-    page.value * PAGE_SIZE,
-  ),
-);
-
-// If the user searches again before the previous answer arrives, the old answer is ignored.
 let latestSearch = 0;
 
-async function search() {
+function search() {
   submitted.value = true;
   const problems = validateRange(range);
   if (problems.startDate || problems.endDate) return;
+  searched = toInstants(range);
+  void load(1);
+}
 
+async function load(target: number) {
   const thisSearch = ++latestSearch;
   loading.value = true;
   loadError.value = null;
   try {
-    const result = await getHistory(toInstants(range));
+    const result = await getHistory(searched, target, PAGE_SIZE);
     if (thisSearch !== latestSearch) return;
-    transactions.value = result;
-    page.value = 1;
+    transactions.value = result.items;
+    total.value = result.total;
+    page.value = target;
     loaded.value = true;
   } catch (error) {
     if (thisSearch !== latestSearch) return;
     transactions.value = [];
+    total.value = 0;
     loadError.value = errorMessage(error);
   } finally {
     if (thisSearch === latestSearch) loading.value = false;
@@ -130,7 +128,7 @@ onMounted(search); // starts with the last 30 days
             </tr>
           </thead>
           <tbody class="divide-y divide-mist-200">
-            <tr v-for="item in pageItems" :key="item.id">
+            <tr v-for="item in transactions" :key="item.id">
               <td class="py-3 pr-4">{{ formatDate(item.fecha) }}</td>
               <td class="py-3 pr-4">
                 {{ formatMoney(item.monto, item.monedaOrigen) }}
@@ -144,9 +142,10 @@ onMounted(search); // starts with the last 30 days
         </table>
       </div>
       <PaginationBar
-        v-model:page="page"
-        :total="transactions.length"
+        :page="page"
+        :total="total"
         :page-size="PAGE_SIZE"
+        @update:page="(target) => load(target)"
       />
     </section>
   </div>
