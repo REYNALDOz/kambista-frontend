@@ -3,6 +3,8 @@
 const BY_ERROR_NAME: Record<string, string> = {
   InvalidCredentialsError: 'Correo o contraseña incorrectos.',
   EmailAlreadyRegisteredError: 'Ese correo ya está registrado. Inicia sesión.',
+  TooManyLoginAttemptsError:
+    'Demasiados intentos fallidos. Espera unos minutos e inténtalo de nuevo.',
   InvalidEmailError: 'Ingresa un correo válido.',
   InvalidNameError: 'Ingresa tu nombre.',
   SameCurrencyError: 'La moneda de origen y la de destino deben ser distintas.',
