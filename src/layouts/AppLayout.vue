@@ -6,7 +6,10 @@ import UserMenu from './UserMenu.vue';
 const route = useRoute();
 
 // The screens of the app. Each new screen adds one line here.
-const links = [{ name: 'exchange', label: 'Inicio' }];
+const links = [
+  { name: 'exchange', label: 'Inicio' },
+  { name: 'history', label: 'Historial de operaciones' },
+];
 </script>
 
 <template>
@@ -22,7 +25,7 @@ const links = [{ name: 'exchange', label: 'Inicio' }];
           :key="link.name"
           :to="{ name: link.name }"
           class="rounded-lg px-3 py-3 text-sm hover:bg-mist-100"
-          active-class="bg-mist-100 font-semibold"
+          exact-active-class="bg-mist-100 font-semibold"
         >
           {{ link.label }}
         </RouterLink>

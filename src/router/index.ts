@@ -25,6 +25,12 @@ export const router = createRouter({
           component: () => import('../features/exchange/ExchangeView.vue'),
           meta: { title: 'Inicio' },
         },
+        {
+          path: 'historial',
+          name: 'history',
+          component: () => import('../features/history/HistoryView.vue'),
+          meta: { title: 'Historial de operaciones' },
+        },
       ],
     },
     // Login and register: public, with the split screen layout.
