@@ -6,10 +6,12 @@ declare module 'vue-router' {
   interface RouteMeta {
     /** Reachable without a session (login and register). */
     public?: boolean;
-    /** Title shown in the top bar of the app. */
+    /** Title of the screen: shown in the top bar of the app and in the browser tab. */
     title?: string;
   }
 }
+
+const APP_NAME = 'Kambista FX';
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -44,15 +46,23 @@ export const router = createRouter({
           path: 'login',
           name: 'login',
           component: () => import('../features/auth/LoginView.vue'),
+          meta: { title: 'Inicia sesión' },
         },
         {
           path: 'register',
           name: 'register',
           component: () => import('../features/auth/RegisterView.vue'),
+          meta: { title: 'Crea tu cuenta' },
         },
       ],
     },
+    // Any other address goes to the home page (or to the login, if there is no session).
+    { path: '/:pathMatch(.*)*', redirect: { name: 'exchange' } },
   ],
 });
 
 router.beforeEach((to) => redirectFor(to, useSession().isAuthenticated));
+
+router.afterEach((to) => {
+  document.title = to.meta.title ? `${to.meta.title} · ${APP_NAME}` : APP_NAME;
+});
