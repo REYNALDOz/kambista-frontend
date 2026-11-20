@@ -1,4 +1,4 @@
-# Kambista FX Web
+# Kambista Web
 
 Aplicación web de cambio de dólares y soles, hecha con **Vue 3**, **TypeScript**, **Vite** y **Tailwind CSS**. El usuario se registra, inicia sesión, cambia dinero con el último tipo de cambio de SUNAT y revisa su historial.
 
@@ -12,7 +12,6 @@ Necesita la API (`kambista-api`) corriendo. La interfaz está en español.
 - Historial por rango de fechas, **paginado en el servidor** (10 por página), con estados de carga, vacío y error.
 - **Admin:** ve un campo extra, "ID de usuario", para consultar el historial de cualquier usuario. Vacío, muestra el suyo. El usuario común no ve el campo.
 - El menú del avatar muestra el rol (Administrador o Usuario).
-- Diseño responsive: menú lateral en pantallas grandes y barra superior en las chicas.
 
 ## Cómo correrlo
 
@@ -24,7 +23,7 @@ cp .env.example .env
 pnpm dev            # http://localhost:5173
 ```
 
-Abrí **http://localhost:5173**. El puerto es fijo a propósito: la API solo acepta pedidos del origen que tenga en `CORS_ORIGIN` (por defecto ese). Si el puerto está ocupado, `pnpm dev` falla en vez de cambiar de puerto, porque con otro puerto todos los pedidos darían error de CORS.
+Abrir **http://localhost:5173**. El puerto es fijo a propósito: la API solo acepta pedidos del origen que tenga en `CORS_ORIGIN` (por defecto ese). Si el puerto está ocupado, `pnpm dev` falla en vez de cambiar de puerto, porque con otro puerto todos los pedidos darían error de CORS.
 
 | Variable | Por defecto | Para qué sirve |
 | --- | --- | --- |
@@ -42,7 +41,6 @@ Vite escribe este valor en el código **al hacer el build**, así que hay que de
 | `pnpm test` | Tests unitarios y de componentes |
 | `pnpm lint` / `pnpm format` | Lint y formato |
 
-Los tests cubren lo más importante: la protección de rutas, la sesión, las validaciones, el formulario de cambio, el historial (paginación, vacío, errores y reintento) y la conversión de zona horaria. Corren en la hora de Perú (se configura en `vite.config.ts`).
 
 ## Estructura
 
@@ -65,13 +63,11 @@ Cada feature guarda junto sus pantallas, llamadas a la API y validaciones. Lo qu
 
 ## Decisiones
 
-- **El cliente HTTP no conoce la sesión.** Se conecta en `main.ts` con dos funciones (obtener el token y qué hacer ante un `401`). Si la API rechaza el token, la app cierra la sesión y avisa que expiró.
-- **El monto es un campo de texto**, no `type="number"`: ese tipo acepta `1e5`, cambia según el idioma y no permite validar bien los decimales. La coma decimal se rechaza pidiendo usar punto.
-- **Los días se envían como instantes exactos.** Un día del historial se convierte al momento en que empieza y termina en la zona horaria del usuario. Enviar solo la fecha sería ese día en UTC, y un cambio hecho a las 8 pm en Perú caería en el día siguiente.
-- **La redirección tras el login solo acepta rutas de la app**, para que un enlace no pueda llevar a otro sitio.
-- **Los mensajes de error están en un solo lugar** (`shared/api/error-messages.ts`): la API nombra sus errores y cada uno tiene un texto legible.
-- **La paginación la hace el servidor.** La pantalla pide una página a la vez (`page` y `limit`) y lee el total del header `X-Total-Count`. Al cambiar de página se usan los días de la **última búsqueda**, no lo que digan los campos ahora, que el usuario pudo editar sin apretar "Buscar".
-- **El campo de admin solo cambia lo que se pide.** La pantalla no decide quién ve qué: lo muestra al admin por comodidad, y quien lo hace cumplir es la API.
+- **El monto es un campo de texto**, no `type="number"`
+- **La redirección tras el login solo acepta rutas de la app**
+- **Los mensajes de error están en un solo lugar** (`shared/api/error-messages.ts`)
+- **La paginación la hace el servidor.** 
+- **El campo de admin solo cambia lo que se pide.** 
 
 ## Despliegue
 
@@ -85,4 +81,4 @@ En la API, `CORS_ORIGIN` debe ser la URL de esta app, **sin barra final**.
 ## Pendiente
 
 - **"Olvidé mi contraseña":** la API no lo tiene, por eso no hay enlace.
-- **Tests end-to-end en el navegador** (por ejemplo con Playwright). La API tiene su propio test E2E.
+- **Tests end-to-end en el navegador** (por ejemplo con Playwright).
